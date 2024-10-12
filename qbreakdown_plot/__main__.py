@@ -6,6 +6,7 @@ from argparse import ArgumentParser, FileType
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pandas as pd
 
 
@@ -92,6 +93,8 @@ def plot(data, plot_type, highlight_projects):
         ax.plot(data["time"], data[plot_type][project], label=project, lw=linewidth)
 
     ax.set_xlabel("Time")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
     ylabels = {"alloc_nodes": "Node count", "jobs_queued": "Job count"}
     ax.set_ylabel(ylabels[plot_type])
     fig.legend(loc="outside right", title="Project")
