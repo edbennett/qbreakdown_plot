@@ -28,7 +28,7 @@ def get_args():
             "    alloc_nodes: the number of nodes allocated to each project."
             "    jobs_queued: the number of jobs in the queue (including running jobs) "
             "    for each project"
-        )
+        ),
     )
     parser.add_argument(
         "--highlight_project",
@@ -64,9 +64,9 @@ def read_data(f):
         parse_dates=["time"],
     )
     # This turns integers into floats, but that shouldn't hurt us on these data
-    return (
-        df.pivot_table(columns=["project"], index=["time"], fill_value=0).reset_index()
-    )
+    return df.pivot_table(
+        columns=["project"], index=["time"], fill_value=0
+    ).reset_index()
 
 
 def plot(data, plot_type, highlight_projects):
@@ -86,7 +86,8 @@ def plot(data, plot_type, highlight_projects):
             continue
         linewidth = (
             3 * plt.rcParams["lines.linewidth"]
-            if project in highlight_projects else None
+            if project in highlight_projects
+            else None
         )
         ax.plot(data["time"], data[plot_type][project], label=project, lw=linewidth)
 
