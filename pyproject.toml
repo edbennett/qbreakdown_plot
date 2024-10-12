@@ -22,3 +22,6 @@ dependencies = ["pandas", "matplotlib"]
 
 [project.scripts]
 qbreakdown_plot = "qbreakdown_plot.__main__:main"
+
+[tool.setuptools.package-data]
+"qbreakdown_plot" = ["styles.mplstyle"]
