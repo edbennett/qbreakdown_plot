@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbreakdown_plot"
+version = "0.0.1"
+authors = [{name="Ed Bennett", email="e.j.bennett@swansea.ac.uk"}]
+description = "Plot cluster allocation breakdown over time."
+readme = "README.md"
+requires-python = ">= 3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = ["pandas", "matplotlib"]
+
+[project.urls]
+"Homepage" = "https://github.com/edbennett/qbreakdown_plot"
+"Bug Tracker" = "https://github.com/edbennett/qbreakdown_plot"
+
+[project.scripts]
+qbreakdown_plot = "qbreakdown_plot.__main__:main"
