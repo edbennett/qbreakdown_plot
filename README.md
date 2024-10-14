@@ -54,6 +54,9 @@ Options:
   use `--plot_style` followed by a stylesheet.
   This may be the name of one of Matplotlib's builtin stylesheets,
   or the path of any stylesheet.
+- To add a dashed horizontal line,
+  e.g. for the mean usage required to utilise a project's resources,
+  use `--hline` followed by a `project,value` pair.
 
 Full example:
 
@@ -62,6 +65,8 @@ qbreakdown_plot qbreakdown_log \
     --plot_type jobs_queued \
     --highlight_project p001 \
     --highlight_project p003 \
+    --hline p001,50 \
+    --hline p003,100 \
     --plot_filename queued.pdf \
     --plot_style ggplot
 ```

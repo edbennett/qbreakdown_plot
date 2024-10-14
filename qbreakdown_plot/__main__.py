@@ -10,11 +10,19 @@ import matplotlib.dates as mdates
 import pandas as pd
 
 
+def twotuple(arg):
+    split_arg = arg.split(",")
+    return split_arg[0], float(split_arg[1])
+
+
 def get_args():
     """
     Define and parse arguments to the code.
     """
-    parser = ArgumentParser(description="Plot a breakdown of cluster usage over time")
+    parser = ArgumentParser(
+        prog="qbreakdown_plot",
+        description="Plot a breakdown of cluster usage over time",
+    )
     parser.add_argument(
         "qbreakdown_file",
         type=FileType("r"),
@@ -38,6 +46,15 @@ def get_args():
         metavar="project",
         default=[],
         help="Project to highlight on the plot",
+    )
+    parser.add_argument(
+        "--hline",
+        dest="hlines",
+        action="append",
+        metavar="number",
+        type=twotuple,
+        default=[],
+        help="Horizontal line to draw in the form `associated project,limit`",
     )
     parser.add_argument(
         "--plot_filename",
@@ -70,7 +87,7 @@ def read_data(f):
     ).reset_index()
 
 
-def plot(data, plot_type, highlight_projects):
+def plot(data, plot_type, highlight_projects, hlines):
     """
     Given a dataframe `data`,
     plot the time history of the specified `plot_type`.
@@ -81,6 +98,7 @@ def plot(data, plot_type, highlight_projects):
         "jobs_queued": "Number of jobs in queue by project",
     }
     ax.set_title(descriptions[plot_type])
+    lines = {}
 
     for project in sorted(data.columns.levels[1]):
         if not project:
@@ -90,7 +108,16 @@ def plot(data, plot_type, highlight_projects):
             if project in highlight_projects
             else None
         )
-        ax.plot(data["time"], data[plot_type][project], label=project, lw=linewidth)
+        lines[project] = ax.plot(
+            data["time"], data[plot_type][project], label=project, lw=linewidth
+        )
+
+    for project, limit in hlines:
+        if project in lines:
+            colour = lines[project][0].get_color()
+        else:
+            colour = "black"
+        ax.axhline(limit, dashes=(3, 3), color=colour)
 
     ax.set_xlabel("Time")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
@@ -121,7 +148,7 @@ def main():
     args = get_args()
     plt.style.use(args.plot_style)
     data = read_data(args.qbreakdown_file)
-    fig = plot(data, args.plot_type, args.highlight_projects)
+    fig = plot(data, args.plot_type, args.highlight_projects, args.hlines)
     save_or_show(fig, args.plot_filename)
 
 
