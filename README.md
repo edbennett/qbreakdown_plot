@@ -15,7 +15,7 @@ To generate this on a Slurm cluster,
 the following command could be used in a Cron job:
 
 ``` bash
-squeue -O Account,NumNodes,State | awk 'BEGIN {ts=strftime("%Y-%m-%dT%H:%M:%S");} {totaljobcounts[$1] += 1; if($3=="RUNNING") {nodecounts[$1] += $2}} END {for(project in nodecounts) {print project, nodecounts[project], totaljobcounts[project], ts}}' >> qbreakdown_log
+squeue -O Account,NumNodes,State,Reason:5 | awk 'BEGIN {ts=strftime("%Y-%m-%dT%H:%M:%S");} {if ($3=="PENDING" && ($4=="Resou" || $4=="Nodes" || $4=="Prior" || $4=="ReqNo")) {waitingjobcounts[$1] += 1; waitingnodecounts[$1] += $2;}; totaljobcounts[$1] += 1; if($3=="RUNNING") {nodecounts[$1] += $2}} END {for(project in nodecounts) {print ts, project, nodecounts[project], totaljobcounts[project], waitingjobcounts[project], waitingnodecounts[project]}}' >> ~/qbreakdown_log
 ```
 
 (Please think about the load that

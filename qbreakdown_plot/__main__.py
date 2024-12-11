@@ -30,7 +30,7 @@ def get_args():
     )
     parser.add_argument(
         "--plot_type",
-        choices=["alloc_nodes", "jobs_queued"],
+        choices=["alloc_nodes", "jobs_queued", "waiting_jobs", "waiting_job_nodes"],
         default="alloc_nodes",
         help=(
             "What to plot:"
@@ -78,8 +78,16 @@ def read_data(f):
     df = pd.read_csv(
         f,
         sep=r"\s+",
-        names=["project", "alloc_nodes", "jobs_queued", "time"],
+        names=[
+            "time",
+            "project",
+            "alloc_nodes",
+            "jobs_queued",
+            "waiting_jobs",
+            "waiting_job_nodes",
+        ],
         parse_dates=["time"],
+        infer_datetime_format=True,
     )
     # This turns integers into floats, but that shouldn't hurt us on these data
     return df.pivot_table(
@@ -96,6 +104,10 @@ def plot(data, plot_type, highlight_projects, hlines):
     descriptions = {
         "alloc_nodes": "Number of nodes allocated by project",
         "jobs_queued": "Number of jobs in queue by project",
+        "waiting_jobs": "Number of jobs waiting in the queue by project",
+        "waiting_job_nodes": (
+            "Number of nodes that waiting jobs in the queue could use by project"
+        ),
     }
     ax.set_title(descriptions[plot_type])
     lines = {}
@@ -122,7 +134,12 @@ def plot(data, plot_type, highlight_projects, hlines):
     ax.set_xlabel("Time")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d %H:%M"))
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-    ylabels = {"alloc_nodes": "Node count", "jobs_queued": "Job count"}
+    ylabels = {
+        "alloc_nodes": "Node count",
+        "jobs_queued": "Job count",
+        "waiting_jobs": "Job count",
+        "waiting_job_nodes": "Node count",
+    }
     ax.set_ylabel(ylabels[plot_type])
     fig.legend(loc="outside right", title="Project")
 
