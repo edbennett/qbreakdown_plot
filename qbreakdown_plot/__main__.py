@@ -48,6 +48,15 @@ def get_args():
         help="Project to highlight on the plot",
     )
     parser.add_argument(
+        "--minimum_usage_filter",
+        type=int,
+        default=None,
+        help=(
+            "Number of nodes a project has to have allocated at some point "
+            "to be eligible ot be shown."
+        ),
+    )
+    parser.add_argument(
         "--hline",
         dest="hlines",
         action="append",
@@ -95,7 +104,7 @@ def read_data(f):
     ).reset_index()
 
 
-def plot(data, plot_type, highlight_projects, hlines):
+def plot(data, plot_type, highlight_projects, hlines, minimum_usage):
     """
     Given a dataframe `data`,
     plot the time history of the specified `plot_type`.
@@ -114,6 +123,11 @@ def plot(data, plot_type, highlight_projects, hlines):
 
     for project in sorted(data.columns.levels[1]):
         if not project:
+            continue
+        if (
+            minimum_usage is not None
+            and not (data["alloc_nodes"][project] > minimum_usage).any()
+        ):
             continue
         linewidth = (
             3 * plt.rcParams["lines.linewidth"]
@@ -165,7 +179,13 @@ def main():
     args = get_args()
     plt.style.use(args.plot_style)
     data = read_data(args.qbreakdown_file)
-    fig = plot(data, args.plot_type, args.highlight_projects, args.hlines)
+    fig = plot(
+        data,
+        args.plot_type,
+        args.highlight_projects,
+        args.hlines,
+        args.minimum_usage_filter,
+    )
     save_or_show(fig, args.plot_filename)
 
 
